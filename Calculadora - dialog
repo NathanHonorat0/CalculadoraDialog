@@ -1,0 +1,224 @@
+#!/bin/bash
+clear
+until grep -E ^[0-9./-]+$ <<< $n1
+do
+        n1=`dialog --stdout \
+                --inputbox "Digite um número: " 0 0 `
+                if [ `echo "$n1" | grep -Ev [0-9./-]+$` ]; then
+                        n1=`dialog --stdout \
+                        --inputbox "Sinto muito, mas é preciso ser apenas números. Digite novamente!!!" 0 0 `
+                fi
+done
+clear
+
+until grep -E ^[0-9./-]+$ <<< $n2
+do
+        n2=`dialog --stdout \
+                --inputbox "Digite um outro número: " 0 0 `
+        if [ `echo "$n2" | grep -Ev [0-9./-]+$` ]; then
+                n2=`dialog --stdout \
+                        --inputbox "Sinto muito, mas é preciso ser apenas números. Digite novamente!!!" 0 0 `
+        fi
+done
+clear
+
+function subtracao {
+subA=`echo "scale=5; $n1 - $n2" | bc`
+subB=`echo "scale=5; $n2 - $n1" | bc`
+
+dialog \
+        --title "SUBTRAÇÃO" \
+        --msgbox "$n1 - $n2 = $subA
+$n2 - $n1 = $subB" \
+        0 0
+sleep 3
+}
+
+function divisao {
+while  [ "$n2" = "0" ]; do
+        n2=`dialog --stdout \
+                --title "A V I S O" \
+                --inputbox "Sinto muito, mas o número não pode ser igual a 0. Por Favor, digite o segundo número novamente
+Digite novamente o segundo número - PRECISA SER DIFERENTE DE 0  " \
+        0 0`
+done
+divA=`echo "scale=5; $n1 / $n2" | bc`
+divB=`echo "scale=5; $n2 / $n1" | bc`
+
+dialog \
+        --title "DIVISÃO" \
+        --msgbox "$n1 % $n2 = $divA
+$n2 % $n1 = $divB" \
+        0 0
+sleep 3
+}
+
+function fatorial {
+until grep -E ^[0-9]+$ <<< $n1
+do
+        n1=`dialog --stdout \
+                --title "A V I S O" \
+                --inputbox "Sinto muito, mas o primeiro número precisa ser um número INTEIRO POSITIVO para ter um fatorial. Por Favor, digite novamente!!!
+Digite o primeiro número novamente: " \
+        0 0`
+
+done
+clear
+
+until grep -E ^[0-9]+$ <<< $n2
+do
+        n2=`dialog --stdout \
+                --title "A V I S O" \
+                --inputbox "Sinto muito, mas o primeiro número precisa ser um número INTEIRO POSITIVO para ter um fatorial. Por Favor, digite novamente!!!
+Digite o primeiro número novamente: " \
+        0 0`
+done
+clear
+
+fatA=1
+fatB=1
+for ((i=1; i <= $n1; i++))
+do
+        fatA=`echo "scale=5; $(($fatA*$i))" | bc`
+done
+
+for ((i=1; i<=$n2; i++))
+do
+        fatB=`echo "scale=5; $(($fatB*$i))" | bc`
+done
+
+dialog \
+        --title "FATORIAL" \
+        --msgbox "$n1! = $fatA
+$n2! = $fatB" \
+        0 0
+}
+
+function exponencial {
+expA=`echo "scale=4; $n1^$n2" | bc`
+expB=`echo "scale=4; $n2^$n1" | bc`
+
+dialog \
+        --title "EXPONENCIAL" \
+        --msgbox "$n1 ^ $n2 = $expA
+$n2 ^ $n1 = $expB" \
+        0 0
+}
+
+function raiz {
+until grep -E ^[0-9./]+$ <<< $n1
+do
+        $n1=`dialog --stdout \
+                --title "A V I S O" \
+                --inputbox "Sinto muito, mas o primeiro número precisa ser um número POSITIVO para ter uma raiz. Por Favor, digite novamente!!!
+Digite o primeiro número novamente: " \
+        0 0 `
+done
+clear
+
+until grep -E ^[0-9./]+$ <<< $n2
+do
+        $n2=`dialog --stdout \
+                --title "A V I S O" \
+                --inputbox "Sinto muito, mas o segundo número precisa ser um número POSITIVO para ter uma raiz. Por Favor, digite novamente!!!
+Digite o primeiro segundo novamente: " \
+        0 0 `
+done
+clear
+
+raizA=`echo "scale=4; sqrt($n1)" | bc`
+raizB=`echo "scale=4; sqrt($n2)" | bc`
+
+dialog \
+        --title "RAIZ QUADRADA" \
+        --msgbox "√$n1 = $raizA
+√$n2 = $raizB" \
+        0 0
+
+}
+
+
+while ! [ "$OP" = "0" ]; do
+        OP=$(
+                dialog --stdout \
+                        --title 'Calculadora' \
+                        --menu 'Escolha uma operação' \
+                        0 0 0 \
+                        1 'Opção 1: ADIÇÃO' \
+                        2 'Opção 2: SUBTRAÇÃO' \
+                        3 'Opção 3: MULTIPLICAÇÃO' \
+                        4 'Opção 4: DIVISÃO' \
+                        5 'Opção 5: FATORIAL' \
+                        6 'Opção 6: EXPONENCIAL' \
+                        7 'Opção 7: RAIZ QUADRADA' \
+                        8 'Opção 8: NOVOS NÚMEROS' \
+                        0 'Opção 0: SAIR' )
+        [ $? -ne 0 ] && break
+        case "$OP" in
+                1)
+                soma=`echo "scale=5; $n1 + $n2" | bc`
+		dialog \
+                        --title "SOMA" \
+                        --msgbox "$n1 + $n2 = $soma" \
+                        0 0
+                sleep 3
+                ;;
+                2) echo "Opção 2: SUBTRAÇÂO"
+                subtracao
+                ;;
+                3)
+                multi=`echo "scale=5; $n1 * $n2" | bc`
+                dialog \
+                        --title "MULTIPLICAÇÂO" \
+                        --msgbox "$n1 x $n2 = $multi" \
+                        0 0
+                sleep 3
+                ;;
+                4) echo "Opção 4: DIVISÂO"
+                divisao
+                ;;
+                5) echo "Opção 5: FATORIAL"
+                fatorial
+                ;;
+                6) echo "Opção 6: EXPONENCIAL"
+                exponencial
+                ;;
+                7) echo "Opção 7: RAIZ QUADRADA"
+                raiz
+		;;
+                8) echo "Opção 8: NOVOS NÚMEROS"
+                n1="NULO"
+                n2="NULO"
+                until grep -E ^[0-9./-]+$ <<< $n1
+                do
+                        n1=`dialog --stdout \
+                                --inputbox "Digite um número: " 0 0 `
+                        if [ `echo "$n1" | grep -Ev [0-9./-]+$` ]; then
+                                n1=`dialog --stdout \
+                                        --inputbox "Sinto muito, mas é preciso ser apenas números. Digite novamente!!!" 0 0 `
+                	fi
+                done
+                clear
+
+                until grep -E ^[0-9./-]+$ <<< $n2
+                do
+                        n2=`dialog --stdout \
+                                --inputbox "Digite um outro número: " 0 0 `
+                        if [ `echo "$n2" | grep -Ev [0-9./-]+$` ]; then
+                                n2=`dialog --stdout \
+                                        --inputbox "Sinto muito, mas é preciso ser apenas números. Digite novamente!!!" 0 0 `
+                        fi
+                done
+		clear
+                ;;
+                0)
+                dialog \
+                        --title "S A I R" \
+                        --msgbox "SAINDO . . ." \
+                sleep 3
+                clear
+                exit
+                ;;
+        esac
+done
+
